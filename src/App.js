@@ -1,11 +1,13 @@
 import { useState, useEffect } from 'react';
 import './App.css';
 import axios from 'axios';
+import Coin from './components/Coin/Coin';
 
 
 
 function App() {
-  const [coins, setCoins] = useState([])
+  const [coins, setCoins] = useState([]);
+  const [search, setSearch] = useState('');
 
   useEffect(() => {
     axios
@@ -16,17 +18,34 @@ function App() {
       }).catch(err => console.log(err))
   }, []);
 
+  const handleChange = e => {
+    setSearch(e.target.value)
+  }
+  
+  // filtering coins changing any chars into lower case to match
+  const filteredCoins = coins.filter(coin => 
+    coin.name.toLowerCase().includes(search.toLowerCase())
+    );
 
   return (
     <div className="crypto-app">
-    <div className="crypto-search">
-      <h1 className="searchText"> Search a crypto currency
+      <div className="crypto-search">
+        <h1 className="searchText"> Search a crypto currency
         <form>
-          <input type="text" placeholder="Search" className="crypto-input"/>
-        </form>
-      </h1>
-      </div> 
-
+            <input type="text" placeholder="Search" className="crypto-input" onChange={handleChange} />
+          </form>
+        </h1>
+      </div>
+      {filteredCoins.map(coin => {
+        return <Coin
+        key={coin.id}
+        name={coin.name}
+        image={coin.image}
+        symbol={coin.symbol}
+        volume={coin.market_cap}
+      />
+      })}
+      
     </div>
   );
 }
